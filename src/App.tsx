@@ -1,24 +1,35 @@
 import React from 'react'
-import logo from './logo.svg'
 import './App.scss'
+import RLogin from '@rsksmart/rlogin'
+import WalletConnectProvider from '@walletconnect/web3-provider'
+
+export const rLogin = new RLogin({
+  providerOptions: {
+    walletconnect: {
+      package: WalletConnectProvider,
+      options: {
+        rpc: {
+          1: 'https://mainnet.infura.io/v3/8043bb2cf99347b1bfadfb233c5325c0',
+          30: 'https://public-node.rsk.co',
+          31: 'https://public-node.testnet.rsk.co'
+        }
+      }
+    }
+  },
+  supportedChains: [1, 30, 31]
+})
+
+const handleLogin = () => {
+  rLogin.connect().then((provider: any) => {
+    console.log('Provider: ', provider)
+    })
+    .catch((err: string) => console.log(err))
+}
 
 function App () {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <button onClick={handleLogin}>Wallet</button>
     </div>
   )
 }
