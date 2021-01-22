@@ -1,24 +1,41 @@
-import React from 'react'
-import logo from './logo.svg'
+import React, { useEffect, useState } from 'react'
 import './App.scss'
+import { IEP1193Provider } from './Typed/iep1993/iep1193'
+import Navbar from './components/Navbar/Navbar'
+import { DidProvider } from './Typed/did/did-provider'
+import { useEthProvider } from './Context/provider-context'
+import Dashboard from './components/Dashboard/Dashboard'
+import ManageIdentity from './components/ManageIdentity/ManageIdentity'
 
 function App () {
+  const { handleLogin, address, provider } = useEthProvider()
+
+  const [did, setDid] = useState('')
+  const [balance, setBalance] = useState(-1)
+  const [hashMessage, setHashMessage] = useState<string>()
+
+  const signMessage = async () => {
+    const message = await new IEP1193Provider(provider).ethSign(address, 'Este es el mensaje a firmar')
+    console.log('message', message)
+    setHashMessage(message)
+  }
+
+  const createDid = async () => {
+    const didProvider = new DidProvider(provider)
+    const did = await didProvider.getDid(address)
+    setDid(did)
+  }
+
+  let walletData
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Navbar></Navbar>
+      <div className="container">
+        <button className="btn btn-primary" onClick={handleLogin}>Open Wallet</button>
+        {address
+          ? <div><Dashboard></Dashboard> <ManageIdentity></ManageIdentity></div> : null}
+      </div>
     </div>
   )
 }

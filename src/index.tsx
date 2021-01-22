@@ -3,10 +3,13 @@ import ReactDOM from 'react-dom'
 import './index.scss'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
+import { EthProvider } from './Context/provider-context'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <EthProvider>
+      <App />
+    </EthProvider>
   </React.StrictMode>,
   document.getElementById('root')
 )

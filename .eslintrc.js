@@ -32,7 +32,8 @@ module.exports = {
     'no-unused-vars': 'warn',
     'no-trailing-spaces': 'warn',
     'no-multiple-empty-lines': 'warn',
-    'no-unreachable': 'warn'
+    'no-unreachable': 'warn',
+    'no-debugger': 'off',
   },
   settings: {
     react: {

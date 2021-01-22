@@ -1,0 +1,5 @@
+declare module '@rsksmart/rlogin'
+declare module '@rsksmart/ethr-did'
+declare module 'ethjs-query'
+declare module 'ethjs'
+declare module 'ethr-did-resolver'
