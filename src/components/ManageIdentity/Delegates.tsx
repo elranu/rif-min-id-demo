@@ -13,7 +13,6 @@ function DelegateComponent () {
 
   useEffect(() => {
     async function resolveAndSetDid () {
-      debugger
       if (address) {
         const didProvider = new DidProvider(provider)
         const publicKeys = await didProvider.getDelegates(address)
@@ -38,6 +37,13 @@ function DelegateComponent () {
     alert('Delegate added successfully')
   }
 
+  const revokeDelegate = async (delegateAddress: string) => {
+    setIsLoading(true)
+    await new DidProvider(provider).revokeDelegate(address, delegateAddress)
+    setIsLoading(false)
+    alert('Delegate revoked successfully')
+  }
+
   const updateDelegateAddress = async (evt: any) => {
     setSelectedDelegateAddress(evt.target.value)
   }
@@ -60,12 +66,14 @@ function DelegateComponent () {
         </h5>
         <div className="card-text text-left">
           { delegates?.map((delegate, i) =>
-            <div key={i}>{delegate}</div>
+            <div key={i}>{delegate}
+              <div><button className="btn btn-secondary" onClick={() => revokeDelegate(delegate)}>-</button></div>
+            </div>
           )}
         </div>
       </div>
 
-      <Modal show={showAddDelegateModal}>
+      <Modal show={showAddDelegateModal} onHide={hideDelegateModal}>
         <Modal.Header closeButton>
           <Modal.Title>Add delegate</Modal.Title>
         </Modal.Header>

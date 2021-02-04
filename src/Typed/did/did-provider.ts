@@ -46,6 +46,25 @@ export class DidProvider {
       //   .then((data: DIDDocument) => resolve(dispatch(resolveDid({ data }))))
     }
 
+    async changeOwner (address: string, newOwner: string): Promise<void> {
+      const chainId = parseInt(await this.iep1193.netVersion())
+
+      const b = new EthrDID({
+        address: address,
+        provider: this.provider,
+        registry: getDIDRegistryAddress(chainId)
+      })
+
+      return new Promise((resolve, reject) => {
+        b.changeOwner(newOwner.toLowerCase()
+        ).then(async (tx: string) => {
+          await this.transactionListener(this.provider, tx)
+          resolve()
+        })
+          .catch((err: Error) => reject(err))
+      })
+    }
+
     async addDelegate (address: string, delegateAddress: string): Promise<void> {
       const chainId = parseInt(await this.iep1193.netVersion())
 
@@ -66,10 +85,69 @@ export class DidProvider {
       })
     }
 
+    async revokeDelegate (address: string, delegateAddress: string): Promise<void> {
+      const chainId = parseInt(await this.iep1193.netVersion())
+
+      const b = new EthrDID({
+        address: address,
+        provider: this.provider,
+        registry: getDIDRegistryAddress(chainId)
+      })
+
+      return new Promise((resolve, reject) => {
+        b.revokeDelegate(delegateAddress, {
+          delegateType: Secp256k1VerificationKey2018
+        }).then(async (tx: string) => {
+          await this.transactionListener(this.provider, tx)
+          resolve()
+        })
+          .catch((err: Error) => reject(err))
+      })
+    }
+
     async getDelegates (address: string): Promise<PublicKey[]> {
       return (await this.resolveDidDocument(address)).publicKey?.filter((pk: PublicKey) => !pk.id.endsWith('controller') &&
         !pk.id.endsWith('owner') && pk.ethereumAddress)
     }
+
+    async addPublicKey (address: string, type: string, value: string, validity?: number) : Promise<void> {
+      const chainId = parseInt(await this.iep1193.netVersion())
+
+      const b = new EthrDID({
+        address: address,
+        provider: this.provider,
+        registry: getDIDRegistryAddress(chainId)
+      })
+
+      return new Promise((resolve, reject) => {
+        b.setAttribute(type, value, validity)
+          .then(async (tx: string) => {
+            await this.transactionListener(this.provider, tx)
+            resolve()
+          })
+          .catch((err: Error) => reject(err))
+      })
+    }
+
+    async revokePublicKey (address: string, type: string, value: string, gasLimit: number) : Promise<void> {
+      const chainId = parseInt(await this.iep1193.netVersion())
+
+      const b = new EthrDID({
+        address: address,
+        provider: this.provider,
+        registry: getDIDRegistryAddress(chainId)
+      })
+
+      return new Promise((resolve, reject) => {
+        b.revokeAttribute(type, value, gasLimit)
+          .then(async (tx: string) => {
+            await this.transactionListener(this.provider, tx)
+            resolve()
+          })
+          .catch((err: Error) => reject(err))
+      })
+    }
+
 
     async getPublicKeys (address: string): Promise<PublicKey[]> {
       return (await this.resolveDidDocument(address)).publicKey?.filter((pk: PublicKey) => pk.publicKeyBase64 || pk.publicKeyHex)
