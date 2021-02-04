@@ -36,7 +36,7 @@ export function EthProvider (props: any) {
 
       setAddress((await iep.ethAccounts())[0])
 
-      iep.accountsChanged?.subscribe(async addresses => {
+      iep.onAccountsChanged.subscribe(async addresses => {
         setAddress(addresses[0])
       })
     }).catch((err: string) => console.log(err))
