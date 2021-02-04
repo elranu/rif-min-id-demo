@@ -4,6 +4,6 @@ interface RequestArguments {
 }
 
 export interface IProvider {
-    request<T>(request: RequestArguments): T
+    request<T>(request: RequestArguments): Promise<T>
     on<T>(method: string, callback: ((value: T) => void)): void;
 }
