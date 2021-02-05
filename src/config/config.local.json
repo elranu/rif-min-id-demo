@@ -1,6 +1,6 @@
 {
   "ethrDid": "",
-  "rpcUrl": "http://127.0.0.1:7545",
+  "rpcUrl": "http://127.0.0.1:8545",
   "balanceName": "RBTC",
   "dataVault": null,
   "coinGeckoIds": null

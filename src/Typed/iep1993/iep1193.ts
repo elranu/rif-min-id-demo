@@ -1,7 +1,7 @@
 import { IProvider } from './models/iprovider'
 import { Observable } from 'rxjs'
 import { Transaction } from './models/transaction'
-// import Eth from 'ethjs-query'
+import { serializeError } from 'eth-rpc-errors'
 
 export interface ConnectInfo {
   chainId: string;
@@ -13,14 +13,19 @@ export interface ProviderRpcError extends Error {
   data?: unknown;
 }
 
+export interface ILogger {
+  log(message?: any, ...optionalParams: any[]): void
+  warn(message?: any, ...optionalParams: any[]): void
+  error(message?: any, ...optionalParams: any[]): void
+  info(message?: any, ...optionalParams: any[]): void
+}
+
 export interface ProviderMessage {
   type: string;
   data: unknown;
 }
 
 export class IEP1193Provider {
-  private provider: IProvider;
-
   public onAccountsChanged!: Observable<string[]>
   public onChainChanged!: Observable<string>
   public onConnected!: Observable<ConnectInfo>
@@ -28,46 +33,75 @@ export class IEP1193Provider {
   public onMessage!: Observable<ProviderMessage>
 
 
-  constructor (provider: IProvider) {
-    this.provider = provider
+  constructor (private provider: IProvider, private logger?: ILogger) {
     this.setupEvents()
+    this.logger = this.logger ? console : this.logger
   }
 
   async netVersion (): Promise<string> {
-    return await this.provider.request<string>({ method: 'net_version' })
+    try {
+      return await this.provider.request<string>({ method: 'net_version' })
+    } catch (error) {
+      this.logger?.error(serializeError(error))
+      return Promise.reject(error)
+    }
   }
 
   async ethAccounts (): Promise<string[]> {
-    return await this.provider.request<string[]>({ method: 'eth_accounts' })
+    try {
+      return await this.provider.request<string[]>({ method: 'eth_accounts' })
+    } catch (error) {
+      this.logger?.error(serializeError(error))
+      return Promise.reject(error)
+    }
   }
 
   async ethGetBalance (account: string): Promise<number> {
-    return this.hexToDecimal(await this.provider.request<string>({
-      method: 'eth_getBalance',
-      params: [account, 'latest']
-    }))
+    try {
+      return this.hexToDecimal(await this.provider.request<string>({
+        method: 'eth_getBalance',
+        params: [account, 'latest']
+      }))
+    } catch (error) {
+      this.logger?.error(serializeError(error))
+      return Promise.reject(error)
+    }
   }
 
   async ethSign (account: string, message: string): Promise<string> {
-    return await this.provider.request<string>({
-      method: 'eth_sign',
-      params: [account, message]
-    })
+    try {
+      return await this.provider.request<string>({
+        method: 'eth_sign',
+        params: [account, message]
+      })
+    } catch (error) {
+      this.logger?.error(serializeError(error))
+      return Promise.reject(error)
+    }
   }
 
   async getTransactionReceipt (txHash: string): Promise<Transaction | null> {
-    const transaction = await this.provider.request<any>({
-      method: 'eth_getTransactionReceipt',
-      params: [txHash]
-    })
-
-    return transaction ? Transaction.parse(transaction) : null
+    try {
+      const transaction = await this.provider.request<any>({
+        method: 'eth_getTransactionReceipt',
+        params: [txHash]
+      })
+      return transaction ? Transaction.parse(transaction) : null
+    } catch (error) {
+      this.logger?.error(serializeError(error))
+      return Promise.reject(error)
+    }
   }
 
   async sendTransaction () {
-    return this.provider.request<string>({
-      method: 'eth_sendTransaction'
-    })
+    try {
+      return this.provider.request<string>({
+        method: 'eth_sendTransaction'
+      })
+    } catch (error) {
+      this.logger?.error(serializeError(error))
+      return Promise.reject(error)
+    }
   }
 
   private hexToDecimal (hexValue: string): number {
