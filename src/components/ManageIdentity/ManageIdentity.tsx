@@ -1,4 +1,3 @@
-import { DIDDocument, PublicKey } from 'did-resolver'
 import React, { useEffect, useState } from 'react'
 import { Button, Modal } from 'react-bootstrap'
 import { useEthProvider } from '../../Context/provider-context'
@@ -8,16 +7,51 @@ import DelegateComponent from './Delegates'
 import PublicKeyComponent from './PublicKeyComponent'
 
 function ManageIdentity () {
-  const { did } = useEthProvider()
+  const { address, provider, isOwner } = useEthProvider()
+  const [isLoading, setIsLoading] = useState(false)
+  const [didOwner, setDidOwner] = useState<string>('')
+  const [newOwnerAddress, setNewOwnerAddress] = useState<string>('')
+  const [showTransferModal, setShowTransferModal] = useState(false)
+
+  useEffect(() => {
+    async function getOwner () {
+      if (address) {
+        const didProvider = new DidProvider(provider)
+        const ownerPK = await didProvider.getOwnerFromDidDoc(address)
+        setDidOwner(await didProvider.getDid(ownerPK?.ethereumAddress ?? ''))
+      }
+    }
+
+    getOwner()
+  }, [address])
+
+  const hideTransferModal = async () => {
+    setShowTransferModal(false)
+  }
+  const updateNewOwnerAddress = async (evt: any) => {
+    setNewOwnerAddress(evt.target.value)
+  }
+
+  const transferOwner = async () => {
+    setIsLoading(true)
+    hideTransferModal()
+    await new DidProvider(provider).changeOwner(address, newOwnerAddress)
+    setIsLoading(false)
+    alert('Transfer owner successfully')
+  }
 
   return (
     <div>
+      { isLoading ? <Loading/> : null}
       <div className="row pt-5">
         <div className="col-md-6">
           <div className="card">
             <div className="card-body">
-              <h5 className="card-title">Persona Owner</h5>
-              <p className="card-text">{did}</p>
+              <h5 className="card-title">Persona Owner
+                { isOwner && <button className="btn btn-primary" onClick={() => { setShowTransferModal(true) }}>Transfer</button> }
+              </h5>
+              <p className="card-text">{didOwner}</p>
+              {console.log(didOwner)}
             </div>
           </div>
         </div>
@@ -38,6 +72,23 @@ function ManageIdentity () {
           </div>
         </div>
       </div>
+
+      <Modal show={showTransferModal} onHide={hideTransferModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Owner</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <input className="form-control" placeholder='New Owner Address' value={newOwnerAddress} onChange={updateNewOwnerAddress}></input>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={hideTransferModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={transferOwner}>
+            Add
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   )
 }

@@ -27,6 +27,7 @@ export function EthProvider (props: any) {
   const [did, setDid] = useState<string>('')
   const [provider, setProvider] = useState(null)
   const [address, setAddress] = useState('')
+  const [isOwner, setIsOwner] = useState<boolean>(false)
 
   async function handleLogin () {
     rLogin.connect().then(async (provider: any) => {
@@ -50,8 +51,11 @@ export function EthProvider (props: any) {
   useEffect(() => {
     async function getDid () {
       if (provider) {
-        const did = await new DidProvider(provider).getDid(address)
+        const didProvider = new DidProvider(provider)
+        const did = await didProvider.getDid(address)
         setDid(did)
+        const ownerPK = await didProvider.getOwnerFromDidDoc(address)
+        setIsOwner(address === ownerPK?.ethereumAddress)
       }
     }
     getDid()
@@ -62,9 +66,10 @@ export function EthProvider (props: any) {
       provider,
       handleLogin,
       address,
-      did
+      did,
+      isOwner
     })
-  }, [provider, address, did])
+  }, [provider, address, did, isOwner])
 
   return <EthProviderContext.Provider value={value} {...props}></EthProviderContext.Provider>
 }
