@@ -40,6 +40,10 @@ export function EthProvider (props: any) {
       iep.onAccountsChanged.subscribe(async addresses => {
         setAddress(addresses[0])
       })
+
+      iep.onChainChanged.subscribe(async chainId => {
+        console.log('ChainId: ', chainId)
+      })
     }).catch((err: string) => console.log(err))
   }
 
