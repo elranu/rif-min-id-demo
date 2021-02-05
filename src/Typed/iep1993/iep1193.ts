@@ -68,10 +68,22 @@ export class IEP1193Provider {
     }
   }
 
-  async ethSign (account: string, message: string): Promise<string> {
+  async ethSign (account: string, message: string): Promise<any> {
+    try {
+      return await this.provider.request<any>({
+        method: 'eth_sign',
+        params: [account, message]
+      })
+    } catch (error) {
+      this.logger?.error(serializeError(error))
+      return Promise.reject(error)
+    }
+  }
+
+  async personalSign (account: string, message: string): Promise<string> {
     try {
       return await this.provider.request<string>({
-        method: 'eth_sign',
+        method: 'personal_sign',
         params: [account, message]
       })
     } catch (error) {
