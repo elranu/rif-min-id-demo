@@ -5,7 +5,7 @@ import { DidProvider } from '../../Typed/did/did-provider'
 import Loading from '../Loading/Loading'
 
 function DelegateComponent () {
-  const { address, provider } = useEthProvider()
+  const { address, provider, isOwner } = useEthProvider()
   const [isLoading, setIsLoading] = useState(false)
   const [showAddDelegateModal, setShowAddDelegateModal] = useState(false)
   const [selectedDelegateAddress, setSelectedDelegateAddress] = useState<string>('')
@@ -62,12 +62,12 @@ function DelegateComponent () {
       { isLoading ? <Loading/> : null}
       <div className="card-body">
         <h5 className="card-title">Delegate Entity
-          <button className="btn btn-primary" onClick={(showDelegateModal)}>+</button>
+          { isOwner && <button className="btn btn-primary pull-right" onClick={(showDelegateModal)}>+</button> }
         </h5>
         <div className="card-text text-left">
           { delegates?.map((delegate, i) =>
             <div key={i}>{delegate}
-              <div><button className="btn btn-secondary" onClick={() => revokeDelegate(delegate)}>-</button></div>
+              { isOwner && <div><button className="btn btn-secondary" onClick={() => revokeDelegate(delegate)}>-</button></div> }
             </div>
           )}
         </div>

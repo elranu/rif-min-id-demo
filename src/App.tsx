@@ -32,7 +32,8 @@ function App () {
     <div className="App">
       <Navbar></Navbar>
       <div className="container">
-        <button className="btn btn-primary" onClick={handleLogin}>Open Wallet</button>
+        {!address
+          ? <button className="btn btn-primary" onClick={handleLogin}>Open Wallet</button> : null}
         {address
           ? <div><Dashboard></Dashboard> <ManageIdentity></ManageIdentity></div> : null}
       </div>

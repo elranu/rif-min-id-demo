@@ -6,7 +6,7 @@ import { DidProvider } from '../../Typed/did/did-provider'
 import Loading from '../Loading/Loading'
 
 function PublicKeyComponent () {
-  const { address, provider } = useEthProvider()
+  const { address, provider, isOwner } = useEthProvider()
   const [isLoading, setIsLoading] = useState(false)
   const [showAddPublicKeyModal, setShowAddPublicKeyModal] = useState(false)
   const [publicKeys, setPublicKeys] = useState<PublicKey[]>()
@@ -62,7 +62,7 @@ function PublicKeyComponent () {
         { isLoading ? <Loading/> : null}
         <div className="card-body">
           <h5 className="card-title">Public Keys
-            <button className="btn btn-primary" onClick={(showPublicKeyModal)}>+</button>
+            { isOwner && <button className="btn btn-primary" onClick={(showPublicKeyModal)}>+</button> }
           </h5>
           {(!publicKeys || publicKeys.length === 0) && <li><em>No public keys</em></li>}
           {publicKeys?.map((pk: PublicKey) => (

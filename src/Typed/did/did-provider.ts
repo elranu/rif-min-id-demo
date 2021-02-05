@@ -3,7 +3,6 @@ import EthrDID from '@rsksmart/ethr-did'
 import { getDIDRegistryAddress, getRPCUrl } from '../../config/getConfig'
 import { DIDDocument, PublicKey, Resolver, ServiceEndpoint } from 'did-resolver'
 import { getResolver } from 'ethr-did-resolver'
-import { DidDocument } from './model/did-document'
 
 const Secp256k1VerificationKey2018 = '0x73696741757468'
 
@@ -40,8 +39,8 @@ export class DidProvider {
       await this.iep1193.netVersion()
       const didResolver = new Resolver(getResolver(this.resolverProviderConfig))
       const did = await this.getDid(address)
+      // const did = await this.getDid('0x9a9a48b9ff4d6f1e157f0cfa2c687a9947488b59')
       const data = await didResolver.resolve(did)
-      debugger
       return data
       //   .then((data: DIDDocument) => resolve(dispatch(resolveDid({ data }))))
     }
@@ -73,7 +72,6 @@ export class DidProvider {
         provider: this.provider,
         registry: getDIDRegistryAddress(chainId)
       })
-
       return new Promise((resolve, reject) => {
         b.addDelegate(delegateAddress, {
           delegateType: Secp256k1VerificationKey2018
@@ -93,7 +91,6 @@ export class DidProvider {
         provider: this.provider,
         registry: getDIDRegistryAddress(chainId)
       })
-
       return new Promise((resolve, reject) => {
         b.revokeDelegate(delegateAddress, {
           delegateType: Secp256k1VerificationKey2018
@@ -108,6 +105,12 @@ export class DidProvider {
     async getDelegates (address: string): Promise<PublicKey[]> {
       return (await this.resolveDidDocument(address)).publicKey?.filter((pk: PublicKey) => !pk.id.endsWith('controller') &&
         !pk.id.endsWith('owner') && pk.ethereumAddress)
+    }
+
+    async getOwnerFromDidDoc (address: string): Promise<PublicKey | null> {
+      // TODO: Ojo, verificar si realmente hay que mostrar el controller o el owner
+      const controller = (await this.resolveDidDocument(address)).publicKey.filter((pk: PublicKey) => pk.id.endsWith('#owner'))[0]
+      return (typeof controller === 'undefined') ? null : controller
     }
 
     async addPublicKey (address: string, type: string, value: string, validity?: number) : Promise<void> {
@@ -147,7 +150,6 @@ export class DidProvider {
           .catch((err: Error) => reject(err))
       })
     }
-
 
     async getPublicKeys (address: string): Promise<PublicKey[]> {
       return (await this.resolveDidDocument(address)).publicKey?.filter((pk: PublicKey) => pk.publicKeyBase64 || pk.publicKeyHex)
