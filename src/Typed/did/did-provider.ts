@@ -35,6 +35,18 @@ export class DidProvider {
       //   return ethrDid.did
     }
 
+    async getAddressByDid (did: string): Promise<string> {
+      const chainId = parseInt(await this.iep1193.netVersion())
+
+      switch (chainId) {
+        case 1: return did.replace('did:ethr:mainnet:', '')
+        case 30: return did.replace('did:ethr:rsk:', '')
+        case 31: return did.replace('did:ethr:rsk:testnet:', '')
+        case 5777: return did.replace('did:ethr:development:', '')
+        default: return did
+      }
+    }
+
     async resolveDidDocument (address: string): Promise<DIDDocument> {
       await this.iep1193.netVersion()
       const didResolver = new Resolver(getResolver(this.resolverProviderConfig))
