@@ -3,7 +3,7 @@ import { useEthProvider } from '../../Context/provider-context'
 import { IEP1193Provider } from '../../Typed/iep1993/iep1193'
 
 function Dashboard () {
-  const { authenticatedAddress, provider, did, selectedDid } = useEthProvider()
+  const { authenticatedAddress, provider, selectedDid } = useEthProvider()
   const [balance, setBalance] = useState<number | null>(null)
   const [hashMessage, setHashMessage] = useState<string>()
   const iep = new IEP1193Provider(provider)

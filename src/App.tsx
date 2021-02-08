@@ -3,14 +3,14 @@ import './App.scss'
 import { IEP1193Provider } from './Typed/iep1993/iep1193'
 import Navbar from './components/Navbar/Navbar'
 import { DidProvider } from './Typed/did/did-provider'
-import { useEthProvider, EthProviderContext } from './Context/provider-context'
+import { useEthProvider } from './Context/provider-context'
 import Dashboard from './components/Dashboard/Dashboard'
 import ManageIdentity from './components/ManageIdentity/ManageIdentity'
 import { Button, Modal } from 'react-bootstrap'
 import Loading from './components/Loading/Loading'
 
 function App () {
-  const { handleLogin, handleChangeDid, authenticatedAddress, provider, setSelectedDid, selectedDid } = useEthProvider()
+  const { handleLogin, handleChangeDid, authenticatedAddress, provider, selectedDid } = useEthProvider()
 
   const [did, setDid] = useState('')
   const [balance, setBalance] = useState(-1)
@@ -25,11 +25,10 @@ function App () {
   }
 
   const changeDid = async () => {
-     setShowChangeDidModal(false)
-     setIsLoading(true)
-     const ssd = await (handleChangeDid as any)(selectedDidAddress)
-     setIsLoading(false)
-    //  alert('Did changed successfully')
+    setShowChangeDidModal(false)
+    setIsLoading(true)
+    const ssd = await (handleChangeDid as any)(selectedDidAddress)
+    setIsLoading(false)
   }
 
   const updateDidAddress = async (evt: any) => {
@@ -42,7 +41,7 @@ function App () {
   }
 
   const hideDidModal = async () => {
-    // setShowChangeDidModal(false)
+    setShowChangeDidModal(false)
   }
 
   let walletData
@@ -51,8 +50,8 @@ function App () {
     <div className="App">
       { isLoading ? <Loading/> : null}
       <Navbar></Navbar>
-      <h1>SelectedDid: {selectedDid}</h1>
       <div className="container">
+        {authenticatedAddress ? <h1>SelectedDid: {selectedDid}</h1> : null}
         {!authenticatedAddress
           ? <button className="btn btn-primary" onClick={handleLogin}>Open Wallet</button> : null}
         {authenticatedAddress
@@ -67,8 +66,6 @@ function App () {
           <Modal.Title>Change Did</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          { /* <input className="form-control" placeholder='Address' value={selectedDidAddress}></input>
-           <input type="text" value={values.selectedDidAddress} {...sharedProps('selectedDidAddress')}></input> */}
           <input className="form-control" placeholder='Address' value={selectedDidAddress} onChange={updateDidAddress}></input>
 
         </Modal.Body>

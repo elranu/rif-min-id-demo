@@ -35,7 +35,6 @@ function DelegateComponent () {
   const addDelegate = async () => {
     setIsLoading(true)
     setShowAddDelegateModal(false)
-    // TODO
     await new DidProvider(provider).addDelegate(selectedDid, selectedDelegateAddress)
     setIsLoading(false)
     alert('Delegate added successfully')
