@@ -13,16 +13,6 @@ function App () {
 
   const [did, setDid] = useState('')
   const [balance, setBalance] = useState(-1)
-  const [hashMessage, setHashMessage] = useState<string>()
-  const [isLoading, setIsLoading] = useState(false)
-  const [showChangeDidModal, setShowChangeDidModal] = useState(false)
-  const [selectedDidAddress, setSelectedDidAddress] = useState<string>('')
-
-  const signMessage = async () => {
-    const message = await new IEP1193Provider(provider).ethSign(authenticatedAddress, 'Este es el mensaje a firmar')
-    console.log('message', message)
-    setHashMessage(message)
-  }
 
   const createDid = async () => {
     const didProvider = new DidProvider(provider)
