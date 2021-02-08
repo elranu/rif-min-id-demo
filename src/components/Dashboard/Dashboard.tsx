@@ -22,6 +22,9 @@ function Dashboard () {
   }, [address])
 
   return (
+
+    { <button className="btn btn-primary" onClick={signMessage}>Sign</button>}
+    {<div>Message: {hashMessage}</div> }
     <div>
       <div className="row pt-5">
         <div className="col-md-6">
@@ -54,8 +57,6 @@ function Dashboard () {
           </div>
         </div>
       </div>
-      { <button className="btn btn-primary" onClick={signMessage}>Sign</button>}
-      {<div>Message: {hashMessage}</div> }
       {/* <button className="btn btn-primary" onClick={createDid}>Create DID</button>
       <div className="alert alert-danger mt-3">DID: <b>{did}</b></div> */}
     </div>
