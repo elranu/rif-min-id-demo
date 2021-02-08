@@ -6,22 +6,22 @@ import { DidProvider } from '../../Typed/did/did-provider'
 import Loading from '../Loading/Loading'
 
 function PublicKeyComponent () {
-  const { address, provider, isOwner } = useEthProvider()
+  const { authenticatedAddress, provider, isOwner, selectedDid } = useEthProvider()
   const [isLoading, setIsLoading] = useState(false)
   const [showAddPublicKeyModal, setShowAddPublicKeyModal] = useState(false)
   const [publicKeys, setPublicKeys] = useState<PublicKey[]>()
 
   useEffect(() => {
     async function resolveAndSetDid () {
-      if (address) {
+      if (authenticatedAddress) {
         const didProvider = new DidProvider(provider)
-        const publicKeys = await didProvider.getPublicKeys(address)
+        const publicKeys = await didProvider.getPublicKeys(selectedDid)
         setPublicKeys(publicKeys)
       }
     }
 
     resolveAndSetDid()
-  }, [address])
+  }, [authenticatedAddress, selectedDid])
 
   const defaults = ({
     algorithm: 'secp256k1',
@@ -42,7 +42,7 @@ function PublicKeyComponent () {
   const addPublicKey = async () => {
     setIsLoading(true)
     setShowAddPublicKeyModal(false)
-    await new DidProvider(provider).addPublicKey(address, `did/pub/${values.algorithm}/${values.purpose}/${values.encoding}`, values.value, parseInt(values.validity))
+    await new DidProvider(provider).addPublicKey(selectedDid, `did/pub/${values.algorithm}/${values.purpose}/${values.encoding}`, values.value, parseInt(values.validity))
     setIsLoading(false)
     alert('PublicKey added successfully')
   }

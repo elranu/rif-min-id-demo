@@ -7,7 +7,7 @@ import DelegateComponent from './Delegates'
 import PublicKeyComponent from './PublicKeyComponent'
 
 function ManageIdentity () {
-  const { address, provider, isOwner } = useEthProvider()
+  const { authenticatedAddress, provider, isOwner, selectedDid } = useEthProvider()
   const [isLoading, setIsLoading] = useState(false)
   const [didOwner, setDidOwner] = useState<string>('')
   const [newOwnerAddress, setNewOwnerAddress] = useState<string>('')
@@ -15,15 +15,15 @@ function ManageIdentity () {
 
   useEffect(() => {
     async function getOwner () {
-      if (address) {
+      if (authenticatedAddress) {
         const didProvider = new DidProvider(provider)
-        const ownerPK = await didProvider.getOwnerFromDidDoc(address)
+        const ownerPK = await didProvider.getOwnerFromDidDoc(selectedDid === '' ? authenticatedAddress : selectedDid)
         setDidOwner(await didProvider.getDid(ownerPK?.ethereumAddress ?? ''))
       }
     }
 
     getOwner()
-  }, [address])
+  }, [authenticatedAddress, selectedDid])
 
   const hideTransferModal = async () => {
     setShowTransferModal(false)
@@ -35,7 +35,7 @@ function ManageIdentity () {
   const transferOwner = async () => {
     setIsLoading(true)
     hideTransferModal()
-    await new DidProvider(provider).changeOwner(address, newOwnerAddress)
+    await new DidProvider(provider).changeOwner(selectedDid, newOwnerAddress)
     setIsLoading(false)
     alert('Transfer owner successfully')
   }

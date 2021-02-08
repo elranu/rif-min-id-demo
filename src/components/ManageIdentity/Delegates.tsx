@@ -1,3 +1,4 @@
+import { PublicKey } from 'did-resolver'
 import React, { useEffect, useState } from 'react'
 import { Button, Modal } from 'react-bootstrap'
 import { useEthProvider } from '../../Context/provider-context'
@@ -5,7 +6,7 @@ import { DidProvider } from '../../Typed/did/did-provider'
 import Loading from '../Loading/Loading'
 
 function DelegateComponent () {
-  const { address, provider, isOwner } = useEthProvider()
+  const { authenticatedAddress, provider, isOwner, selectedDid } = useEthProvider()
   const [isLoading, setIsLoading] = useState(false)
   const [showAddDelegateModal, setShowAddDelegateModal] = useState(false)
   const [selectedDelegateAddress, setSelectedDelegateAddress] = useState<string>('')
@@ -13,10 +14,12 @@ function DelegateComponent () {
 
   useEffect(() => {
     async function resolveAndSetDid () {
-      if (address) {
+      if (authenticatedAddress) {
         const didProvider = new DidProvider(provider)
-        const publicKeys = await didProvider.getDelegates(address)
         const delegates: string[] = []
+        let publicKeys: PublicKey[] = []
+
+        publicKeys = await didProvider.getDelegates(selectedDid)
 
         for (const key of publicKeys) {
           delegates.push(await didProvider.getDid(key.ethereumAddress || ''))
@@ -27,19 +30,25 @@ function DelegateComponent () {
     }
 
     resolveAndSetDid()
-  }, [address])
+  }, [authenticatedAddress, selectedDid])
 
   const addDelegate = async () => {
     setIsLoading(true)
     setShowAddDelegateModal(false)
-    await new DidProvider(provider).addDelegate(address, selectedDelegateAddress)
+    // TODO
+    await new DidProvider(provider).addDelegate(selectedDid, selectedDelegateAddress)
     setIsLoading(false)
     alert('Delegate added successfully')
   }
 
   const revokeDelegate = async (delegateAddress: string) => {
+    // TODO: No funciona la libreria, tiene un problema de formato del Address
+    // TODO: Poner un confirm para eliminar el Delegate, luego de una consulta
     setIsLoading(true)
-    await new DidProvider(provider).revokeDelegate(address, delegateAddress)
+    // TODO
+    const delAd = '0xb16c4fd1edf9a6af2f030c7fc999020cea7324bb'
+    await new DidProvider(provider).revokeDelegate(authenticatedAddress, delAd)
+    // await new DidProvider(provider).revokeDelegate(authenticatedAddress, delegateAddress)
     setIsLoading(false)
     alert('Delegate revoked successfully')
   }

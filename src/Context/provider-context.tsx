@@ -4,7 +4,7 @@ import { IEP1193Provider } from '../Typed/iep1993/iep1193'
 import RLogin from '@rsksmart/rlogin'
 import { DidProvider } from '../Typed/did/did-provider'
 
-const EthProviderContext = React.createContext(null)
+export const EthProviderContext = React.createContext(null)
 
 export const rLogin = new RLogin({
   providerOptions: {
@@ -25,7 +25,8 @@ export const rLogin = new RLogin({
 export function EthProvider (props: any) {
   const [did, setDid] = useState<string>('')
   const [provider, setProvider] = useState(null)
-  const [address, setAddress] = useState('')
+  const [authenticatedAddress, setAuthenticatedAddress] = useState('')
+  const [selectedDid, setSelectedDid] = useState('')
   const [isOwner, setIsOwner] = useState<boolean>(false)
 
   async function handleLogin () {
@@ -35,10 +36,13 @@ export function EthProvider (props: any) {
       setProvider(provider)
       const iep = new IEP1193Provider(provider)
 
-      setAddress((await iep.ethAccounts())[0])
+      const account = (await iep.ethAccounts())[0]
+      setSelectedDid(account)
+      setAuthenticatedAddress(account)
 
       iep.onAccountsChanged.subscribe(async addresses => {
-        setAddress(addresses[0])
+        setSelectedDid(addresses[0])
+        setAuthenticatedAddress(addresses[0])
       })
 
       iep.onChainChanged.subscribe(async chainId => {
@@ -47,28 +51,40 @@ export function EthProvider (props: any) {
     }).catch((err: string) => console.log(err))
   }
 
+  async function handleChangeDid (texto: string) {
+    // (newSelectedDid: string)
+    // TODO: obtener el parametro
+    const newSelectedDid = '0x9A9a48b9FF4d6F1E157f0cfa2C687a9947488B59'
+    setSelectedDid(newSelectedDid)
+    alert('Did changed successfully')
+  }
+
   useEffect(() => {
     async function getDid () {
       if (provider) {
         const didProvider = new DidProvider(provider)
-        const did = await didProvider.getDid(address)
+        const did = await didProvider.getDid(authenticatedAddress)
         setDid(did)
-        const ownerPK = await didProvider.getOwnerFromDidDoc(address)
-        setIsOwner(address === ownerPK?.ethereumAddress)
+        const ownerPK = await didProvider.getOwnerFromDidDoc(selectedDid)
+        setIsOwner(authenticatedAddress === ownerPK?.ethereumAddress)
+        console.log('selectedDid from getDid: ' + selectedDid)
       }
     }
     getDid()
-  }, [address])
+  }, [authenticatedAddress, selectedDid])
 
   const value = useMemo(() => {
     return ({
       provider,
       handleLogin,
-      address,
+      authenticatedAddress,
       did,
-      isOwner
+      isOwner,
+      selectedDid,
+      handleChangeDid,
+      setSelectedDid
     })
-  }, [provider, address, did, isOwner])
+  }, [provider, authenticatedAddress, did, isOwner, selectedDid])
 
   return <EthProviderContext.Provider value={value} {...props}></EthProviderContext.Provider>
 }
