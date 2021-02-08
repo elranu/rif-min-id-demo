@@ -7,9 +7,10 @@ import { useEthProvider, EthProviderContext } from './Context/provider-context'
 import Dashboard from './components/Dashboard/Dashboard'
 import ManageIdentity from './components/ManageIdentity/ManageIdentity'
 import { Button, Modal } from 'react-bootstrap'
+import Loading from './components/Loading/Loading'
 
 function App () {
-  const { handleLogin, handleChangeDid, authenticatedAddress, provider } = useEthProvider()
+  const { handleLogin, handleChangeDid, authenticatedAddress, provider, setSelectedDid, selectedDid } = useEthProvider()
 
   const [did, setDid] = useState('')
   const [balance, setBalance] = useState(-1)
@@ -24,13 +25,11 @@ function App () {
   }
 
   const changeDid = async () => {
-    // setSelectedDid('kjhlhjkj')
-    //    handleChangeDid()
-  //   setIsLoading(true)
-  //   setShowChangeDidModal(false)
-  //   handleChangeDid
-  //   setIsLoading(false)
-  //   alert('Did changed successfully')
+     setShowChangeDidModal(false)
+     setIsLoading(true)
+     const ssd = await (handleChangeDid as any)(selectedDidAddress)
+     setIsLoading(false)
+    //  alert('Did changed successfully')
   }
 
   const updateDidAddress = async (evt: any) => {
@@ -50,7 +49,9 @@ function App () {
 
   return (
     <div className="App">
+      { isLoading ? <Loading/> : null}
       <Navbar></Navbar>
+      <h1>SelectedDid: {selectedDid}</h1>
       <div className="container">
         {!authenticatedAddress
           ? <button className="btn btn-primary" onClick={handleLogin}>Open Wallet</button> : null}
@@ -58,7 +59,7 @@ function App () {
           ? <div>
             <Dashboard></Dashboard><br/>
             <ManageIdentity></ManageIdentity><br/>
-            <button className="btn btn-primary" onClick={handleChangeDid}>Change Did</button>
+            <button className="btn btn-primary" onClick={showDidModal}>Change Did</button>
           </div> : null}
       </div>
       <Modal show={showChangeDidModal} onHide={hideDidModal}>
@@ -75,7 +76,7 @@ function App () {
           <Button variant="secondary" onClick={hideDidModal}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleChangeDid}>
+          <Button variant="primary" onClick={changeDid}>
             Change
           </Button>
         </Modal.Footer>
