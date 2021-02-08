@@ -13,6 +13,9 @@ function App () {
 
   const [did, setDid] = useState('')
   const [balance, setBalance] = useState(-1)
+  const [isLoading, setIsLoading] = useState(false)
+  const [showChangeDidModal, setShowChangeDidModal] = useState(false)
+  const [selectedDidAddress, setSelectedDidAddress] = useState<string>('')
 
   const createDid = async () => {
     const didProvider = new DidProvider(provider)
@@ -40,7 +43,7 @@ function App () {
   }
 
   const hideDidModal = async () => {
-    setShowChangeDidModal(false)
+    // setShowChangeDidModal(false)
   }
 
   let walletData
