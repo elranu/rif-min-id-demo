@@ -6,7 +6,6 @@ import { DidProvider } from '../Typed/did/did-provider'
 import Torus from '@toruslabs/torus-embed'
 import { updateLanguageServiceSourceFile } from 'typescript'
 
-
 export const EthProviderContext = React.createContext(null)
 
 const networkRSKTestNet = {
@@ -95,13 +94,23 @@ export function EthProvider (props: any) {
         const didProvider = new DidProvider(provider)
         const did = await didProvider.getDid(authenticatedAddress)
         setDid(did)
+      }
+    }
+    getDid()
+  }, [authenticatedAddress])
+
+  useEffect(() => {
+    async function getOwner () {
+      if (provider) {
+        const didProvider = new DidProvider(provider)
         const ownerPK = await didProvider.getOwnerFromDidDoc(selectedDid)
         setIsOwner(authenticatedAddress === ownerPK?.ethereumAddress)
         console.log('selectedDid from getDid: ' + selectedDid)
       }
     }
-    getDid()
-  }, [authenticatedAddress])
+    getOwner()
+  }, [authenticatedAddress, selectedDid])
+
 
   const value = useMemo(() => {
     return ({
@@ -112,7 +121,8 @@ export function EthProvider (props: any) {
       isOwner,
       selectedDid,
       handleChangeDid,
-      setSelectedDid
+      setSelectedDid,
+      setIsOwner
     })
   }, [provider, authenticatedAddress, did, isOwner, selectedDid])
 

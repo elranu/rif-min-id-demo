@@ -13,16 +13,19 @@ function PublicKeyComponent () {
 
   useEffect(() => {
     async function resolveAndSetDid () {
-      if (authenticatedAddress) {
-        const didProvider = new DidProvider(provider)
-        const publicKeys = await didProvider.getPublicKeys(selectedDid)
-        setPublicKeys(publicKeys)
-      }
+      await getPublicKeys()
     }
 
     resolveAndSetDid()
   }, [authenticatedAddress, selectedDid])
 
+  const getPublicKeys = async () => {
+    if (authenticatedAddress) {
+      const didProvider = new DidProvider(provider)
+      const publicKeys = await didProvider.getPublicKeys(selectedDid)
+      setPublicKeys(publicKeys)
+    }
+  }
   const defaults = ({
     algorithm: 'secp256k1',
     purpose: 'veriKey',
@@ -44,6 +47,7 @@ function PublicKeyComponent () {
     setShowAddPublicKeyModal(false)
     await new DidProvider(provider).addPublicKey(selectedDid, `did/pub/${values.algorithm}/${values.purpose}/${values.encoding}`, values.value, parseInt(values.validity))
     setIsLoading(false)
+    await getPublicKeys()
     alert('PublicKey added successfully')
   }
 
