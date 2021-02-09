@@ -33,9 +33,9 @@ export const rLogin = new RLogin({
       package: Torus, // required
       options: {
         networkParams: {
-          host: 'https://public-node.testnet.rsk.co', // optional
-          chainId: 31, // optional
-          networkId: 31 // optional
+          host: 'https://saas-dev.extrimian.com/gasnetdesarpckey?apikey=8hZqPJKJUGem2rVOJBg8CMIu7hyx9w', // optional
+          chainId: 5194, // optional
+          networkId: 5194 // optional
         }
       }
     },
@@ -46,12 +46,13 @@ export const rLogin = new RLogin({
           1: 'https://mainnet.infura.io/v3/8043bb2cf99347b1bfadfb233c5325c0',
           30: 'https://public-node.rsk.co',
           31: 'https://public-node.testnet.rsk.co',
-          1337: 'http:///127.0.0.1:8545'
+          1337: 'http:///127.0.0.1:8545',
+          5194: 'https://saas-dev.extrimian.com/gasnetdesarpckey?apikey=8hZqPJKJUGem2rVOJBg8CMIu7hyx9w'
         }
       }
     }
   },
-  supportedChains: [1, 30, 31, 1137]
+  supportedChains: [1, 30, 31, 1137, 5194]
 })
 
 export function EthProvider (props: any) {

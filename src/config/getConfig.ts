@@ -3,6 +3,7 @@ import Ethereum from './config.ethereum.json'
 import Mainnet from './config.mainnet.json'
 import Testnet from './config.testnet.json'
 import Local from './config.local.json'
+import Gasnet from './config.gasnet.json'
 
 export enum SETTINGS {
   ETHR_DID_CONTRACT = 'ethrDid',
@@ -17,6 +18,7 @@ const getSetting = (chainId: number, setting: SETTINGS) => {
     case 1: return Ethereum[setting]
     case 30: return Mainnet[setting]
     case 31: return Testnet[setting]
+    case 5194: return Gasnet[setting]
     default: return Local[setting]
   }
 }

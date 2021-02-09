@@ -23,6 +23,7 @@ export class DidProvider {
         case 30: return `did:ethr:rsk:${address}`
         case 31: return `did:ethr:rsk:testnet:${address}`
         case 5777: return `did:ethr:development:${address}`
+        case 5194: return `did:ethr:gasnet:${address}`
         default: return address
       }
     }
@@ -35,12 +36,12 @@ export class DidProvider {
         case 30: return did.replace('did:ethr:rsk:', '')
         case 31: return did.replace('did:ethr:rsk:testnet:', '')
         case 5777: return did.replace('did:ethr:development:', '')
+        case 5194: return did.replace('did:ethr:gasnet:', '')
         default: return did
       }
     }
 
     async resolveDidDocument (address: string): Promise<DIDDocument> {
-      await this.iep1193.netVersion()
       const didResolver = new Resolver(getResolver(this.resolverProviderConfig))
       const did = await this.getDid(address)
       const data = await didResolver.resolve(did)
@@ -111,7 +112,7 @@ export class DidProvider {
 
     async getOwnerFromDidDoc (address: string): Promise<PublicKey | null> {
       // TODO: Ojo, verificar si realmente hay que mostrar el controller o el owner
-      const controller = (await this.resolveDidDocument(address)).publicKey.filter((pk: PublicKey) => pk.id.endsWith('#owner'))[0]
+      const controller = (await this.resolveDidDocument(address)).publicKey.filter((pk: PublicKey) => pk.id.endsWith('#controller'))[0]
       return (typeof controller === 'undefined') ? null : controller
     }
 
@@ -178,7 +179,8 @@ export class DidProvider {
         { name: 'mainnet', registry: getDIDRegistryAddress(1), rpcUrl: getRPCUrl(1) },
         { name: 'rsk', registry: getDIDRegistryAddress(30), rpcUrl: getRPCUrl(30) },
         { name: 'rsk:testnet', registry: getDIDRegistryAddress(31), rpcUrl: getRPCUrl(31) },
-        { name: 'development', registry: getDIDRegistryAddress(5777), rpcUrl: getRPCUrl(5777) }
+        { name: 'development', registry: getDIDRegistryAddress(5777), rpcUrl: getRPCUrl(5777) },
+        { name: 'gasnet', registry: getDIDRegistryAddress(5194), rpcUrl: getRPCUrl(5194) }
       ]
     }
 }

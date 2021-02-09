@@ -21,6 +21,7 @@
     "did-resolver": "^2.1.2",
     "eth-rpc-errors": "^4.0.2",
     "ethjs-query": "^0.3.8",
+    "ethr-did-resolver": "^3.0.3",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.3",
     "react-dom": "^17.0.1",
