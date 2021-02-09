@@ -3,11 +3,40 @@ import React, { useState, useMemo, useEffect } from 'react'
 import { IEP1193Provider } from '../Typed/iep1993/iep1193'
 import RLogin from '@rsksmart/rlogin'
 import { DidProvider } from '../Typed/did/did-provider'
+import Torus from '@toruslabs/torus-embed'
+
 
 export const EthProviderContext = React.createContext(null)
 
+const networkRSKTestNet = {
+  name: 'RSK Testnet',
+  short_name: 'rsk',
+  chain: 'RSK',
+  network: 'Rsk testnet',
+  chain_id: 31,
+  network_id: 31,
+  rpc_url: 'https://public-node.testnet.rsk.co',
+  native_currency: {
+    symbol: 'RSK',
+    name: 'RSK',
+    decimals: '18',
+    contractAddress: '',
+    balance: ''
+  }
+}
+
 export const rLogin = new RLogin({
   providerOptions: {
+    torus: {
+      package: Torus, // required
+      options: {
+        networkParams: {
+          host: 'https://public-node.testnet.rsk.co', // optional
+          chainId: 31, // optional
+          networkId: 31 // optional
+        }
+      }
+    },
     walletconnect: {
       package: WalletConnectProvider,
       options: {
@@ -20,7 +49,7 @@ export const rLogin = new RLogin({
       }
     }
   },
-  supportedChains: [1, 30, 31]
+  supportedChains: [1, 30, 31, 1137]
 })
 
 export function EthProvider (props: any) {
