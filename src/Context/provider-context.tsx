@@ -81,11 +81,8 @@ export function EthProvider (props: any) {
     }).catch((err: string) => console.log(err))
   }
 
-  async function handleChangeDid (texto: string) {
-    // (newSelectedDid: string)
-    // TODO: obtener el parametro
-    const newSelectedDid = '0x9A9a48b9FF4d6F1E157f0cfa2C687a9947488B59'
-    setSelectedDid(newSelectedDid)
+  async function handleChangeDid (address: string) {
+    setSelectedDid(address)
     alert('Did changed successfully')
   }
 
@@ -121,6 +118,7 @@ export function EthProvider (props: any) {
 
 export function useEthProvider () {
   const context = React.useContext(EthProviderContext)
+
   if (!context) {
     throw new Error('useEthProvider debe estar dentro del proveedor EthProviderContext')
   }

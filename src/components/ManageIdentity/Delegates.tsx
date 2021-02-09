@@ -35,20 +35,18 @@ function DelegateComponent () {
   const addDelegate = async () => {
     setIsLoading(true)
     setShowAddDelegateModal(false)
-    // TODO
     await new DidProvider(provider).addDelegate(selectedDid, selectedDelegateAddress)
     setIsLoading(false)
     alert('Delegate added successfully')
   }
 
-  const revokeDelegate = async (delegateAddress: string) => {
+  const revokeDelegate = async (delegate: string) => {
     // TODO: No funciona la libreria, tiene un problema de formato del Address
     // TODO: Poner un confirm para eliminar el Delegate, luego de una consulta
     setIsLoading(true)
-    // TODO
-    const delAd = '0xb16c4fd1edf9a6af2f030c7fc999020cea7324bb'
-    await new DidProvider(provider).revokeDelegate(authenticatedAddress, delAd)
-    // await new DidProvider(provider).revokeDelegate(authenticatedAddress, delegateAddress)
+    const didProvider = new DidProvider(provider)
+    const delegateAddress = await didProvider.getAddressByDid(delegate)
+    await didProvider.revokeDelegate(authenticatedAddress, delegateAddress)
     setIsLoading(false)
     alert('Delegate revoked successfully')
   }

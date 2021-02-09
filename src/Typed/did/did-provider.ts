@@ -25,24 +25,26 @@ export class DidProvider {
         case 5777: return `did:ethr:development:${address}`
         default: return address
       }
+    }
 
-      //   const ethrDid = new EthrDID({
-      //     address: address,
-      //     provider: this.provider,
-      //     registry: getDIDRegistryAddress(parseInt(await this.iep1193.netVersion()))
-      //   })
-      //   console.log('did', ethrDid)
-      //   return ethrDid.did
+    async getAddressByDid (did: string): Promise<string> {
+      const chainId = parseInt(await this.iep1193.netVersion())
+
+      switch (chainId) {
+        case 1: return did.replace('did:ethr:mainnet:', '')
+        case 30: return did.replace('did:ethr:rsk:', '')
+        case 31: return did.replace('did:ethr:rsk:testnet:', '')
+        case 5777: return did.replace('did:ethr:development:', '')
+        default: return did
+      }
     }
 
     async resolveDidDocument (address: string): Promise<DIDDocument> {
       await this.iep1193.netVersion()
       const didResolver = new Resolver(getResolver(this.resolverProviderConfig))
       const did = await this.getDid(address)
-      // const did = await this.getDid('0x9a9a48b9ff4d6f1e157f0cfa2c687a9947488b59')
       const data = await didResolver.resolve(did)
       return data
-      //   .then((data: DIDDocument) => resolve(dispatch(resolveDid({ data }))))
     }
 
     async changeOwner (address: string, newOwner: string): Promise<void> {
