@@ -51,7 +51,6 @@ function App () {
       { isLoading ? <Loading/> : null}
       <Navbar></Navbar>
       <div className="container">
-        {authenticatedAddress ? <h1>SelectedDid: {selectedDid}</h1> : null}
         {!authenticatedAddress
           ? <button className="btn btn-primary" onClick={handleLogin}>Open Wallet</button> : null}
         {authenticatedAddress

@@ -4,6 +4,7 @@ import { IEP1193Provider } from '../Typed/iep1993/iep1193'
 import RLogin from '@rsksmart/rlogin'
 import { DidProvider } from '../Typed/did/did-provider'
 import Torus from '@toruslabs/torus-embed'
+import { updateLanguageServiceSourceFile } from 'typescript'
 
 
 export const EthProviderContext = React.createContext(null)
@@ -27,6 +28,7 @@ const networkRSKTestNet = {
 
 export const rLogin = new RLogin({
   providerOptions: {
+    network: '',
     torus: {
       package: Torus, // required
       options: {
@@ -67,12 +69,12 @@ export function EthProvider (props: any) {
       const iep = new IEP1193Provider(provider)
 
       const account = (await iep.ethAccounts())[0]
-      setSelectedDid(account)
-      setAuthenticatedAddress(account)
+      setSelectedDid(account.toLowerCase())
+      setAuthenticatedAddress(account.toLowerCase())
 
       iep.onAccountsChanged.subscribe(async addresses => {
-        setSelectedDid(addresses[0])
-        setAuthenticatedAddress(addresses[0])
+        setSelectedDid(addresses[0].toLowerCase())
+        setAuthenticatedAddress(addresses[0].toLowerCase())
       })
 
       iep.onChainChanged.subscribe(async chainId => {
@@ -82,7 +84,7 @@ export function EthProvider (props: any) {
   }
 
   async function handleChangeDid (address: string) {
-    setSelectedDid(address)
+    setSelectedDid(address.toLowerCase())
     alert('Did changed successfully')
   }
 
@@ -98,7 +100,7 @@ export function EthProvider (props: any) {
       }
     }
     getDid()
-  }, [authenticatedAddress, selectedDid])
+  }, [authenticatedAddress])
 
   const value = useMemo(() => {
     return ({
