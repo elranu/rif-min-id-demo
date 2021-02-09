@@ -7,7 +7,7 @@ import DelegateComponent from './Delegates'
 import PublicKeyComponent from './PublicKeyComponent'
 
 function ManageIdentity () {
-  const { authenticatedAddress, provider, isOwner, selectedDid } = useEthProvider()
+  const { authenticatedAddress, provider, isOwner, selectedDid, setIsOwner } = useEthProvider()
   const [isLoading, setIsLoading] = useState(false)
   const [didOwner, setDidOwner] = useState<string>('')
   const [newOwnerAddress, setNewOwnerAddress] = useState<string>('')
@@ -23,7 +23,7 @@ function ManageIdentity () {
     }
 
     getOwner()
-  }, [authenticatedAddress, selectedDid])
+  }, [authenticatedAddress, selectedDid, isOwner])
 
   const hideTransferModal = async () => {
     setShowTransferModal(false)
@@ -37,6 +37,8 @@ function ManageIdentity () {
     hideTransferModal()
     await new DidProvider(provider).changeOwner(selectedDid, newOwnerAddress)
     setIsLoading(false)
+    const dummyVar = await (setIsOwner as any)(selectedDid === newOwnerAddress)
+    setNewOwnerAddress('')
     alert('Transfer owner successfully')
   }
 
@@ -75,7 +77,7 @@ function ManageIdentity () {
 
       <Modal show={showTransferModal} onHide={hideTransferModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Add Owner</Modal.Title>
+          <Modal.Title>Transfer Owner</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <input className="form-control" placeholder='New Owner Address' value={newOwnerAddress} onChange={updateNewOwnerAddress}></input>
@@ -85,7 +87,7 @@ function ManageIdentity () {
             Cancel
           </Button>
           <Button variant="primary" onClick={transferOwner}>
-            Add
+            Transfer
           </Button>
         </Modal.Footer>
       </Modal>

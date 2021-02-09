@@ -10,7 +10,7 @@ import { Button, Modal } from 'react-bootstrap'
 import Loading from './components/Loading/Loading'
 
 function App () {
-  const { handleLogin, handleChangeDid, authenticatedAddress, provider, selectedDid } = useEthProvider()
+  const { handleLogin, handleChangeDid, authenticatedAddress, provider, selectedDid, setIsOwner } = useEthProvider()
 
   const [did, setDid] = useState('')
   const [balance, setBalance] = useState(-1)

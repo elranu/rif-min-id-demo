@@ -15,28 +15,33 @@ function DelegateComponent () {
   useEffect(() => {
     async function resolveAndSetDid () {
       if (authenticatedAddress) {
-        const didProvider = new DidProvider(provider)
-        const delegates: string[] = []
-        let publicKeys: PublicKey[] = []
-
-        publicKeys = await didProvider.getDelegates(selectedDid)
-
-        for (const key of publicKeys) {
-          delegates.push(await didProvider.getDid(key.ethereumAddress || ''))
-        }
-
-        setDelegates(delegates)
+        await getDelegates()
       }
     }
 
     resolveAndSetDid()
-  }, [authenticatedAddress, selectedDid])
+  }, [selectedDid])
+
+  const getDelegates = async () => {
+    const didProvider = new DidProvider(provider)
+    const delegates: string[] = []
+    let publicKeys: PublicKey[] = []
+
+    publicKeys = await didProvider.getDelegates(selectedDid)
+
+    for (const key of publicKeys) {
+      delegates.push(await didProvider.getDid(key.ethereumAddress || ''))
+    }
+
+    setDelegates(delegates)
+  }
 
   const addDelegate = async () => {
     setIsLoading(true)
     setShowAddDelegateModal(false)
     await new DidProvider(provider).addDelegate(selectedDid, selectedDelegateAddress)
     setIsLoading(false)
+    await getDelegates()
     alert('Delegate added successfully')
   }
 

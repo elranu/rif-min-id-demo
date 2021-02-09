@@ -42,7 +42,6 @@ function Dashboard () {
             </div>
           </div>
         </div>
-
       </div>
       <div className="row pt-5">
         <div className="col-md-6">
@@ -54,12 +53,17 @@ function Dashboard () {
             </div>
           </div>
         </div>
-
+        <div className="col-md-6">
+          <div className="card">
+            <div className="card-body">
+              <h5 className="card-title">Sign Content</h5>
+              <p className="card-text">{ <button className="btn btn-primary" onClick={signMessage}>Sign</button>}</p>
+              <p className="card-text">{hashMessage ? <div>Message: {hashMessage}</div> : null }</p>
+            </div>
+          </div>
+        </div>
       </div>
-      { <button className="btn btn-primary" onClick={signMessage}>Sign</button>}
-      {<div>Message: {hashMessage}</div> }
-      {/* <button className="btn btn-primary" onClick={createDid}>Create DID</button>
-      <div className="alert alert-danger mt-3">DID: <b>{did}</b></div> */}
+      <hr></hr>
     </div>
   )
 }
